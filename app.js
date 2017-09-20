@@ -26,6 +26,15 @@ app.post("/register", function (req, res) {
     var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
+
+    var data = { 'username': username, 'email': email, 'password': password };
+    var sql = "INSERT INTO User SET ?";
+    con.query(sql, data, function (err, result) {
+        if (err)
+            throw err;
+        console.log(result);
+    });
+    
 });
 
 app.listen(8000);
