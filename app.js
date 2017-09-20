@@ -33,8 +33,8 @@ app.post("/register", function (req, res) {
         if (err)
             throw err;
         console.log(result);
+        res.send("Data Succesfully added query the User table in database");
     });
-    
 });
 
 app.listen(8000);
