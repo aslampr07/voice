@@ -26,7 +26,8 @@ con.connect(function (err) {
 });
 
 app.post("/register", function (req, res) {
-    //get the crudential from the request
+    //get the properties from the request,
+    //validation of the req.body is not done, currently it is assumed that the request properties is valid
     var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
@@ -34,6 +35,7 @@ app.post("/register", function (req, res) {
     var data = { 'username': username, 'email': email, 'password': password };
     var sql = "INSERT INTO User SET ?";
     con.query(sql, data, function (err, result) {
+        console.log(err);
         if (err)
         {
             //Error code for duplicate data.
@@ -46,13 +48,23 @@ app.post("/register", function (req, res) {
                 }
                 res.send(response);
             }
+            //Error for null data
+            if (err.errno == 1048)
+            {
+                res.status(400);
+                var response = {
+                    'status': 'error',
+                    'type':'nullData'
+                }
+                res.send(response);
+            }
         }
         else
         {
             var response = {
                 'status': 'success'
             }
-            res.send(respnse);
+            res.send(response);
         }
     });
 });
