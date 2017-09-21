@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //mysql initializaion.
 var con = mysql.createConnection({
+    //Change this IP to localhost after development
     host: "192.168.0.101",
     user: "root",
     password: "fuckkmea",
@@ -17,8 +18,11 @@ var con = mysql.createConnection({
 
 con.connect(function (err) {
     if (err)
+    {
+        console.log(err);
         throw err;
-    console.log("Database Connected");
+    }
+    console.log("Mysql Connection Successful");
 });
 
 app.post("/register", function (req, res) {
@@ -31,10 +35,28 @@ app.post("/register", function (req, res) {
     var sql = "INSERT INTO User SET ?";
     con.query(sql, data, function (err, result) {
         if (err)
-            throw err;
-        console.log(result);
-        res.send("Data Succesfully added query the User table in database");
+        {
+            //Error code for duplicate data.
+            if (err.errno == 1062)
+            {
+                res.status(403);
+                var response = {
+                    'status': 'error',
+                    'type': 'duplicate',
+                }
+                res.send(response);
+            }
+        }
+        else
+        {
+            var response = {
+                'status': 'success'
+            }
+            res.send(respnse);
+        }
     });
 });
 
+//The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
+//security risk. The port 80 is redirected to 8000 from the router.
 app.listen(8000);
