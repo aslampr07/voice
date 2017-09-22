@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
+var path = require('path');
 
 //express initilization.
 var app = express();
@@ -8,6 +9,8 @@ app.use(bodyParser.json()); //may not need this line, as there is no json parsin
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //mysql initializaion.
+//This code must not be inside this file, it should be inside an another file that
+//does not added to git.
 var con = mysql.createConnection({
     //Change this IP to localhost after development
     host: "192.168.0.101",
@@ -32,6 +35,7 @@ app.post("/register", function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
 
+    //The sql query for inserting data
     var data = { 'username': username, 'email': email, 'password': password };
     var sql = "INSERT INTO User SET ?";
     con.query(sql, data, function (err, result) {
@@ -69,6 +73,11 @@ app.post("/register", function (req, res) {
     });
 });
 
+app.get("/register", function (req, res) {
+    res.sendFile(path.join(__dirname,"webview/register.html"));
+});
+
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
 app.listen(8000);
+
