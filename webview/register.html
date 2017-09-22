@@ -3,16 +3,16 @@
     Register your profile
     <div>
         Username:
-        <input type="text" />
+        <input type="text" id="username"/>
     </div>
     <div>
         Email:
-        <input type="text" />
+        <input type="text" id="email"/>
     </div>
 
     <div>
         Password:
-        <input type="password" />
+        <input type="password" id="password"/>
     </div>
     <div>
         <input type="button"
@@ -23,7 +23,19 @@
         var xhttp = new XMLHttpRequest();
         function submit()
         {
-            alert("Hello World");
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            xhttp.onreadystatechange = function ()
+            {
+                if (xhttp.readyState == 4) {
+                    alert(xhttp.responseText);
+                }
+            }
+            xhttp.open("POST", window.location.href, true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            var req = "username=" + username + "&email=" + email + "&password=" + password;
+            xhttp.send(req);
         }
     </script>
 </body>

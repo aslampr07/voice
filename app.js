@@ -73,6 +73,8 @@ app.post("/register", function (req, res) {
     });
 });
 
+//This code is temperory and should be replace by express static module.
+//This is to serve a webpage.
 app.get("/register", function (req, res) {
     res.sendFile(path.join(__dirname,"webview/register.html"));
 });
