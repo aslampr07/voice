@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var path = require('path');
+var validator = require('validator');
 
 //express initilization.
 var app = express();
@@ -35,42 +36,49 @@ app.post("/register", function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
 
+    if (!validator.isEmail(email)) {
+        var response = {
+            'status': 'error',
+            'type': 'invalidEmail'
+        }
+        res.send(response);
+    }
+
     //The sql query for inserting data
-    var data = { 'username': username, 'email': email, 'password': password };
-    var sql = "INSERT INTO User SET ?";
-    con.query(sql, data, function (err, result) {
-        console.log(err);
-        if (err)
-        {
-            //Error code for duplicate data.
-            if (err.errno == 1062)
-            {
-                res.status(403);
+    else
+    {
+        var data = { 'username': username, 'email': email, 'password': password, 'creationTime': new Date() };
+        var sql = "INSERT INTO User SET ?";
+        con.query(sql, data, function (err, result) {
+            console.log(err);
+            if (err) {
+                //Error code for duplicate data.
+                if (err.errno == 1062) {
+                    res.status(403);
+                    var response = {
+                        'status': 'error',
+                        'type': 'duplicate',
+                    }
+                    res.send(response);
+                }
+                //Error for null data
+                if (err.errno == 1048) {
+                    res.status(400);
+                    var response = {
+                        'status': 'error',
+                        'type': 'nullData'
+                    }
+                    res.send(response);
+                }
+            }
+            else {
                 var response = {
-                    'status': 'error',
-                    'type': 'duplicate',
+                    'status': 'success'
                 }
                 res.send(response);
             }
-            //Error for null data
-            if (err.errno == 1048)
-            {
-                res.status(400);
-                var response = {
-                    'status': 'error',
-                    'type':'nullData'
-                }
-                res.send(response);
-            }
-        }
-        else
-        {
-            var response = {
-                'status': 'success'
-            }
-            res.send(response);
-        }
-    });
+        });
+    }
 });
 
 //This code is temperory and should be replace by express static module.
