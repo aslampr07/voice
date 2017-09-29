@@ -87,6 +87,10 @@ app.get("/register", function (req, res) {
     res.sendFile(path.join(__dirname,"webview/register.html"));
 });
 
+app.get("/login", function (req, res) {
+    res.send("Working");
+});
+
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
 app.listen(8000);
