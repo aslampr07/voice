@@ -1,6 +1,7 @@
 var express = require('express');
+//The mysql connection
+var con = require('./config/db');
 var bodyParser = require('body-parser');
-var mysql = require('mysql');
 var path = require('path');
 var validator = require('validator');
 var crypto = require('crypto');
@@ -10,25 +11,7 @@ var app = express();
 app.use(bodyParser.json()); //may not need this line, as there is no json parsing.
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//mysql initializaion.
-//This code must not be inside this file, it should be inside an another file that
-//does not added to git.
-var con = mysql.createConnection({
-    //Change this IP to localhost after development
-    host: "192.168.0.101",
-    user: "root",
-    password: "fuckkmea",
-    database: "voice"
-});
 
-con.connect(function (err) {
-    if (err)
-    {
-        console.log(err);
-        throw err;
-    }
-    console.log("Mysql Connection Successful");
-});
 
 app.post("/register", function (req, res) {
     //get the properties from the request,
@@ -52,7 +35,6 @@ app.post("/register", function (req, res) {
         var data = { 'username': username, 'email': email, 'password': password, 'creationTime': new Date() };
         var sql = "INSERT INTO User SET ?";
         con.query(sql, data, function (err, result) {
-            console.log(err);
             if (err) {
                 //Error code for duplicate data.
                 if (err.errno == 1062) {
@@ -140,6 +122,10 @@ app.post("/login", function (req, res) {
         }
 
     });
+});
+
+app.get("/channel/create", function (req, res) {
+    res.send("Testing create");
 });
 
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
