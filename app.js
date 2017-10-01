@@ -11,7 +11,7 @@ var app = express();
 app.use(bodyParser.json()); //may not need this line, as there is no json parsing.
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
+app.set('mysql', con);
 
 app.post("/register", function (req, res) {
     //get the properties from the request,
@@ -124,9 +124,9 @@ app.post("/login", function (req, res) {
     });
 });
 
-app.get("/channel/create", function (req, res) {
-    res.send("Testing create");
-});
+//For routing the channel requests
+var channel = require('./routes/channel');
+app.use('/channel', channel);
 
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
