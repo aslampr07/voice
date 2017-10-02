@@ -35,12 +35,16 @@
     <Compile Include="routes\channel.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="tools\auth.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="webview\register.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="tools\" />
     <Folder Include="routes\" />
     <Folder Include="webview\" />
   </ItemGroup>

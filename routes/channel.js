@@ -1,8 +1,29 @@
 ﻿var express = require('express');
-var router = express.Router();
+var token = require("../tools/auth")
 
-router.get('/create', function (req, res) {
-    res.send("your are on channel/require");
-});
+module.exports = function (con) {
+    var router = express.Router();
 
-module.exports = router;
+
+    router.post('/create', function (req, res) {
+        token.verify(req.query.auth, con, function (exist, id) {
+            if (exist)
+            {
+                res.send("The account does exist");
+            }
+            else
+            {
+                var response = {
+                    'status': 'error',
+                    'type': 'invalidAuth'
+                };
+                response.send(response);
+            }
+        });
+    });
+
+
+    return router;
+}
+
+//module.exports = router;
