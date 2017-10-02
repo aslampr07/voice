@@ -1,5 +1,6 @@
 var express = require('express');
 //The mysql connection
+var mysql = require('mysql');
 var con = require('./config/db');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -26,6 +27,7 @@ app.post("/register", function (req, res) {
             'type': 'invalidEmail'
         }
         res.send(response);
+        console.log("Invalid Email ID on account creation.");
     }
 
     //The sql query for inserting data
@@ -44,6 +46,7 @@ app.post("/register", function (req, res) {
                         'type': 'duplicate',
                     }
                     res.send(response);
+                    console.log("Duplicate username or email on account creation.");
                 }
                 //Error for null data
                 if (err.errno == 1048) {
@@ -53,6 +56,7 @@ app.post("/register", function (req, res) {
                         'type': 'nullData'
                     }
                     res.send(response);
+                    console.log("Empty field on account creation");
                 }
             }
             else {
@@ -60,6 +64,7 @@ app.post("/register", function (req, res) {
                     'status': 'success'
                 }
                 res.send(response);
+                console.log("Account is created");
             }
         });
     }
@@ -85,6 +90,7 @@ app.post("/login", function (req, res) {
                 'type': 'notExist'
             };
             res.send(response);
+            console.log("Login does not exist");
         }
         else
         {
@@ -108,6 +114,7 @@ app.post("/login", function (req, res) {
                             'token': token
                         };
                         res.send(response);
+                        console.log("Login Successful");
                     }
                 })
             }
@@ -118,15 +125,16 @@ app.post("/login", function (req, res) {
                     'type': 'wrongPassword'
                 };
                 res.send(response);
+                console.log("Wrong password on login");
             }
         }
 
     });
 });
 
-//For routing the channel requests
-var channel = require('./routes/channel');
-app.use('/channel', channel);
+//For routing the channel requests.
+//The mysql connection has been passed to the routes.
+app.use('/channel', require('./routes/channel')(con));
 
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
