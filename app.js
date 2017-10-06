@@ -11,6 +11,7 @@ var crypto = require('crypto');
 var app = express();
 app.use(bodyParser.json()); //may not need this line, as there is no json parsing.
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('webview'));
 
 app.set('mysql', con);
 
@@ -68,12 +69,6 @@ app.post("/register", function (req, res) {
             }
         });
     }
-});
-
-//This code is temperory and should be replace by express static module.
-//This is to serve a webpage.
-app.get("/register", function (req, res) {
-    res.sendFile(path.join(__dirname,"webview/register.html"));
 });
 
 app.post("/login", function (req, res) {
