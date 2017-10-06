@@ -10,24 +10,44 @@ module.exports = function (con) {
         token.verify(req.query.auth, con, function (exist, id) {
             if (exist) {
                 if ('name' in req.body) {
-                    var data = { 'name': req.body.name, 'creationTime': new Date() };
-                    con.query("INSERT INTO Channel SET ?", data, function (err, result, field) {
-                        if (err)
-                            //Set the error management response.
-                            console.log(err);
-                        else {
-                            if ('description' in req.body) {
-                                var data = { 'body': req.body.description, 'channelID': result.insertId };
-                                var sql = "INSERT INTO Description SET ?";
-                                con.query(sql, data, function (err, results) {
-                                    if (err)
-                                        console.log(err);
-                                    res.send("Channel Created with discription");
+                    con.beginTransaction(function (err) {
+                        if (err) {
+                            throw err;
+                        }
+                        var data = { 'name': req.body.name, 'creationTime': new Date() };
+                        con.query("INSERT INTO Channel SET ?", data, function (err, result, field) {
+                            if (err) {
+                                con.rollback(function () {
+                                    throw err;
                                 });
                             }
-                            else
-                                res.send("Channel Created without disctiption");
-                        }
+                            else {
+                                var channelID = result.insertId;
+                                var data = { 'userID': id, 'channelID': channelID };
+                                con.query("INSERT INTO Administration SET ?", data, function (err, result, field) {
+                                    if (err) {
+                                        con.rollback(function () {
+                                            throw err;
+                                        });
+                                    }
+                                    con.commit(function (err) {
+                                        if (err)
+                                            throw err;
+                                        else {
+                                            console.log("Channel Created");
+                                            if ('description' in req.body) {
+                                                var data = { 'body': req.body.description, 'channelID': channelID };
+                                                con.query("INSERT INTO Description SET ?", data, function (err, results) {
+                                                    if (err)
+                                                        throw err;
+                                                    res.send("Channel Successfully created");
+                                                });
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
                     });
                 }
             }

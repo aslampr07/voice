@@ -41,7 +41,6 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="webview\register.html" />
-    <Content Include="webview\wallpaper.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
