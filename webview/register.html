@@ -32,7 +32,7 @@
                     alert(xhttp.responseText);
                 }
             }
-            xhttp.open("POST", /register, true);
+            xhttp.open("POST", '/register', true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             var req = "username=" + username + "&email=" + email + "&password=" + password;
             xhttp.send(req);
