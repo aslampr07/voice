@@ -98,7 +98,8 @@ app.post("/login", function (req, res) {
                 con.query(sql, data, function (err, result) {
                     if (err)
                     {
-                        res.send("There is a fucking error")
+                        res.send("Error in the database")
+                        throw err;
                     }
 
                     //When is everything is fine.
