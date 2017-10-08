@@ -12,24 +12,28 @@
                 var login = $('#login').val();
                 var password = $('#password').val();
                 $.post("/login", { 'login': login, 'password': password }, function (data, status) {
-                    if (data.status == "error")
-                    {
+                    if (data.status == "error") {
                         alert("Account Does not exist");
                     }
-                    else
-                    {
+                    else {
                         Cookies.set('auth', data.token);
                         alert("Authentication token is stored in cookie");
                     }
                 });
             })
-
         });
     </script>
 </head>
 <body>
-    <input type="text" id="login"/>
-    <input type="password" id="password"/>
-    <input type="button" value="log in" id="submit"/>
+    <div>
+        login
+        <input type="text" id="login" />
+    </div>
+    <div>
+        password
+        <input type="password" id="password" />
+    </div>
+    <br />
+    <input type="button" value="log in" id="submit" />
 </body>
 </html>
