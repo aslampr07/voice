@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="js/js.cookie.js"></script>
+    <script>
+        $(function () {
+            $('#submit').click(function () {
+                var name = $('#namebox').val();
+                var desc = $('#desc').val();
+                if (Cookies.get('auth')) {
+                    var auth = Cookies.get('auth');
+                    var url = '/channel/create?auth=' + auth;
+                    var data = { 'name': name, 'description': desc };
+                    $.post(url, data, function (data, status) {
+                        alert(status);
+                    });
+                }
+                else
+                {
+                    alert("You idiot! first login first");
+                    window.location.href = "/login.html";
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    channel name:
+    <br />
+    <input type="text" id="namebox" />
+    <br />
+    Description
+    <br />
+    <textarea id="desc"></textarea>
+    <br />
+    <input type="button" value="Create" id="submit" />
+</body>
+</html>

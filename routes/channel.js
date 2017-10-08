@@ -40,7 +40,10 @@ module.exports = function (con) {
                                                 con.query("INSERT INTO Description SET ?", data, function (err, results) {
                                                     if (err)
                                                         throw err;
-                                                    res.send("Channel Successfully created");
+                                                    var response = {
+                                                        'status': 'success',
+                                                    }
+                                                    res.send(response);
                                                 });
                                             }
                                         }
