@@ -42,6 +42,9 @@
     <Compile Include="webview\js\js.cookie.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="webview\createchannel.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="webview\login.html">
       <SubType>Code</SubType>
     </Content>
