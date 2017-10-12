@@ -1,4 +1,5 @@
-﻿var express = require('express');
+﻿"use strict";
+var express = require('express');
 var mysql = require('mysql');
 var token = require('../tools/auth');
 
@@ -17,7 +18,8 @@ module.exports = function (con) {
                     var creationTime = result[0].creationTime;
                     console.log(creationTime);
                     var response = {
-                        'name': name,
+                        'status': 'success',
+                        'username': name,
                         'creationTime': creationTime
                     };
                     res.send(response);
@@ -28,10 +30,33 @@ module.exports = function (con) {
                     'status': 'error',
                     'type': 'authError'
                 };
-                res.send();
+                res.send(response);
             }
         });
     });
+    router.get('/:username', function (req, res) {
+        var sql = mysql.format('SELECT username, creationTime FROM User WHERE username = ?', [req.params.username]);
+        con.query(sql, function (err, result) {
+            if (err)
+                throw err;
+            if (result.lenght == 0) {
+                var response = {
+                    'status': 'error',
+                    'type': 'noUserFound'
+                }
+                res.send(response);
+            }
+            else {
+                var response = {
+                    'status': 'success',
+                    'username': result[0].username,
+                    'creationTime': result[0].creationTime
+                };
+                res.send(response);
+            }
+        });
+    });
+
 
     return router;
 }
