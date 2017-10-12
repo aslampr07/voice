@@ -131,6 +131,7 @@ app.post("/login", function (req, res) {
 //For routing the channel requests.
 //The mysql connection has been passed to the routes.
 app.use('/channel', require('./routes/channel')(con));
+app.use('/profile', require('./routes/profile')(con));
 
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
