@@ -93,7 +93,6 @@ module.exports = function (con) {
                 //For finding the name of the admins of the channel.
                 sql = mysql.format("SELECT u.username FROM User u, Channel c, Administration a WHERE " +
                     "a.channelID = c.ID and a.userID = u.ID and c.name = ?", [req.params.channelName]);
-                console.log(sql);
                 con.query(sql, function (err, result) {
                     if (err)
                         throw err;
