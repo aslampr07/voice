@@ -6,6 +6,8 @@ var token = require('../tools/auth');
 module.exports = function (con) {
     var router = express.Router();
 
+    //Used for getting the details about the user who has login
+    //This requires Authentication.
     router.get('/', function (req, res) {
         token.verify(req.query.auth, con, function (exist, id) {
             if (exist) {
@@ -34,6 +36,9 @@ module.exports = function (con) {
             }
         });
     });
+
+    //This request is to get the details of any user.
+    //This does not require any authentication.
     router.get('/:username', function (req, res) {
         var sql = mysql.format('SELECT username, creationTime FROM User WHERE username = ?', [req.params.username]);
         con.query(sql, function (err, result) {
