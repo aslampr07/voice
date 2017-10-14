@@ -6,6 +6,10 @@
   "author": {
     "name": "aslam"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aslampr07/voice.git"
+  },
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
