@@ -64,5 +64,51 @@ module.exports = function (con) {
             }
         });
     });
+
+    router.get('/_:channelName', function (req, res) {
+        //For getting the name, creationTime and description of the channel
+        var sql = mysql.format("SELECT c.name, d.body, creationTime FROM Channel c, Description d" +
+            " WHERE c.ID = d.channelID AND c.name = ?", [req.params.channelName]);
+        con.query(sql, function (err, result) {
+            if (err)
+                throw err;
+            //If the channel is not found
+            if (result.length == 0)
+            {
+                var response = {
+                    'status': 'error',
+                    'type': 'noChannelFound'
+                };
+                res.send(response);
+            }
+            //If Channel is found
+            else
+            {
+                var response = {
+                    'status': 'success',
+                    'name': result[0].name,
+                    'creationTime': result[0].creationTime,
+                    'description': result[0].body
+                }
+                //For finding the name of the admins of the channel.
+                sql = mysql.format("SELECT u.username FROM User u, Channel c, Administration a WHERE " +
+                    "a.channelID = c.ID and a.userID = u.ID and c.name = ?", [req.params.channelName]);
+                console.log(sql);
+                con.query(sql, function (err, result) {
+                    if (err)
+                        throw err;
+                    var admins = [];
+                    for (item of result)
+                    {
+                        admins.push(item.username);
+                    }
+                    response['admins'] = admins;
+                    res.send(response);
+                });
+
+            }
+        });
+    });
+
     return router;
 }
