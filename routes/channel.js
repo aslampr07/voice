@@ -73,8 +73,7 @@ module.exports = function (con) {
             if (err)
                 throw err;
             //If the channel is not found
-            if (result.length == 0)
-            {
+            if (result.length == 0) {
                 var response = {
                     'status': 'error',
                     'type': 'noChannelFound'
@@ -82,8 +81,7 @@ module.exports = function (con) {
                 res.send(response);
             }
             //If Channel is found
-            else
-            {
+            else {
                 var response = {
                     'status': 'success',
                     'name': result[0].name,
@@ -97,8 +95,7 @@ module.exports = function (con) {
                     if (err)
                         throw err;
                     var admins = [];
-                    for (item of result)
-                    {
+                    for (item of result) {
                         admins.push(item.username);
                     }
                     response['admins'] = admins;

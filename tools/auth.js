@@ -4,7 +4,7 @@ module.exports = {
     'verify': function (auth, con, callback) {
         var sql = mysql.format("SELECT userID FROM Authentication WHERE token = ?", [auth]);
         con.query(sql, function (err, result, field) {
-            if (err) {
+            if (err) { 
                 throw err;
             }
             else 

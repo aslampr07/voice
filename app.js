@@ -32,8 +32,7 @@ app.post("/register", function (req, res) {
     }
 
     //The sql query for inserting data
-    else
-    {
+    else {
         //The password is not salted yet, it should be done ASAP
         var data = { 'username': username, 'email': email, 'password': password, 'creationTime': new Date() };
         var sql = "INSERT INTO User SET ?";
@@ -78,8 +77,7 @@ app.post("/login", function (req, res) {
     var password = req.body.password;
     var sql = mysql.format("SELECT password, ID from User where username = ? or email = ?", [login, login]);
     con.query(sql, function (err, result, field) {
-        if (result.length == 0)
-        {
+        if (result.length == 0) {
             var response = {
                 'status': 'error',
                 'type': 'notExist'
@@ -87,24 +85,20 @@ app.post("/login", function (req, res) {
             res.send(response);
             console.log("Login does not exist");
         }
-        else
-        {
+        else {
             //This single lines compare the password, The gateway to everything.
-            if (result[0].password == password)
-            {
+            if (result[0].password == password) {
                 var token = crypto.randomBytes(20).toString('HEX');
                 var data = { 'userID': result[0].ID, 'token': token, 'creationTime': new Date() };
                 var sql = "INSERT INTO Authentication SET ?";
                 con.query(sql, data, function (err, result) {
-                    if (err)
-                    {
+                    if (err) {
                         res.send("Error in the database")
                         throw err;
                     }
 
                     //When is everything is fine.
-                    else
-                    {
+                    else {
                         var response = {
                             'status': 'success',
                             'token': token
@@ -114,8 +108,7 @@ app.post("/login", function (req, res) {
                     }
                 })
             }
-            else
-            {
+            else {
                 var response = {
                     'status': 'error',
                     'type': 'wrongPassword'
@@ -132,6 +125,7 @@ app.post("/login", function (req, res) {
 //The mysql connection has been passed to the routes.
 app.use('/channel', require('./routes/channel')(con));
 app.use('/profile', require('./routes/profile')(con));
+app.use('/post', require('./routes/post')(con));
 
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.

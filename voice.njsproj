@@ -35,6 +35,9 @@
     <Compile Include="routes\channel.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="routes\post.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\profile.js">
       <SubType>Code</SubType>
     </Compile>
