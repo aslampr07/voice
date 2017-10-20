@@ -1,9 +1,11 @@
 ﻿var express = require('express');
 var mysql = require('mysql');
 var token = require('../tools/auth');
+var Hashid = require('hashids');
 
 module.exports = function (con) {
     var router = express.Router();
+    var hashid = new Hashid('Olakkeda mood', 10);
 
     router.post('/create', function (req, res) {
         token.verify(req.query.auth, con, function (exist, userID) {
@@ -33,34 +35,44 @@ module.exports = function (con) {
                                 }
                                 //The post title is not checked for having empty string.
                                 //It just assumes that title is not empty.
-                                data = {
-                                    'postID': result.insertId,
-                                    'body': title
-                                };
-                                sql = "INSERT INTO PostTitle SET ?";
-                                con.query(sql, data, function (err, result) {
+                                var charID = hashid.encode(result.insertId);
+                                sql = mysql.format("UPDATE Post SET charID = ? WHERE ID = ?", [charID, result.insertId]);
+                                con.query(sql, function (err) {
                                     if (err) {
                                         con.rollback(function () {
                                             throw err;
                                         });
                                     }
-                                    con.commit(function (err) {
+                                    data = {
+                                        'postID': result.insertId,
+                                        'body': title
+                                    };
+                                    sql = "INSERT INTO PostTitle SET ?";
+                                    con.query(sql, data, function (err, result) {
                                         if (err) {
                                             con.rollback(function () {
                                                 throw err;
                                             });
                                         }
-                                        var response = {
-                                            'status': 'success'
-                                        }
-                                        res.send(response);
+                                        con.commit(function (err) {
+                                            if (err) {
+                                                con.rollback(function () {
+                                                    throw err;
+                                                });
+                                            }
+                                            var response = {
+                                                'status': 'success',
+                                                'id': charID
+                                            }
+                                            res.send(response);
+                                        });
                                     });
+
                                 });
                             });
                         });
                     }
-                    else
-                    {
+                    else {
                         var response = {
                             'status': 'error',
                             'type': 'channelNotFound'
@@ -69,8 +81,7 @@ module.exports = function (con) {
                     }
                 });
             }
-            else
-            {
+            else {
                 var response = {
                     'status': 'error',
                     'type': 'authError'
