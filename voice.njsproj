@@ -47,24 +47,19 @@
     <Compile Include="tools\auth.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="webview\js\jquery-3.2.1.js" />
-    <Compile Include="webview\js\js.cookie.js" />
+    <Compile Include="public\js\jquery-3.2.1.js" />
+    <Compile Include="public\js\js.cookie.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="webview\createchannel.html">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="webview\login.html">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="webview\register.html" />
+    <Content Include="public\account\register.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="public\account\" />
     <Folder Include="tools\" />
     <Folder Include="routes\" />
-    <Folder Include="webview\" />
-    <Folder Include="webview\js\" />
+    <Folder Include="public\" />
+    <Folder Include="public\js\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
