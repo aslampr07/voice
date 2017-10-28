@@ -32,6 +32,9 @@
     <Compile Include="config\db.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="routes\account.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\channel.js">
       <SubType>Code</SubType>
     </Compile>
