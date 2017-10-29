@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Login Page</title>
+    <style>
+        #StatusDisp
+        {
+            color:red;
+        }
+    </style>
+    <script src="../js/jquery-3.2.1.js"></script>
+    <script src="../js/js.cookie.js"></script>
+    <script>
+        $(function () {
+            $('#LoginButton').click(function () {
+                var login = $('#LoginBox').val();
+                var password = $("#PasswordBox").val();
+                var request = {
+                    'login': login,
+                    'password': password
+                };
+
+                $.post('/api/1.0/account/login', request, function (data, status) {
+                    if (data.status == 'error')
+                        $('#StatusDisp').text("Password or Username is incorrect");
+                    else
+                    {
+                        console.log(data);
+                        Cookies.set('auth', data.token, { expires: 30 });
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>Username or Email</div>
+    <div><input type="text" id="LoginBox"/></div>
+    <div>Password</div>
+    <div><input type="password" id="PasswordBox"/></div>
+    <div><input type="button" id="LoginButton" value="Login"/></div>
+    <div id="StatusDisp"></div>
+    <div>Dont have an account? register <a href="/register">Here</a></div>
+</body>
+</html>
