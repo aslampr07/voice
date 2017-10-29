@@ -12,19 +12,37 @@
                 var username = $('#UsernameBox').val();
                 var email = $('#EmailBox').val();
                 var password = $('#PasswordBox').val();
-
-                //Registarion is not completed.
+                var query = {
+                    'username': username,
+                    'email': email,
+                    'password': password
+                };
+                $.post('/api/1.0/account/register', query, function (data, status) {
+                    console.log(data)
+                    if (data.status == 'success') {
+                        alert("Account created");
+                        window.location = '/login';
+                    }
+                    if (data.status == 'error') {
+                        if (data.type == 'invalidEmail') {
+                            alert("Email is invalid");
+                        }
+                        if (data.type == 'duplicate') {
+                            alert("Username or email already exist");
+                        }
+                    }
+                });
             });
         });
     </script>
 </head>
 <body>
     <div>Username</div>
-    <div><input type="text" id="UsernameBox"/></div>
+    <div><input type="text" id="UsernameBox" /></div>
     <div>Email</div>
-    <div><input type="text" id="EmailBox"/></div>
+    <div><input type="text" id="EmailBox" /></div>
     <div>password</div>
-    <div><input type="password" id="PasswordBox"/></div>
-    <div><input type="button" id="RegisterButton" value="register"/></div>
+    <div><input type="password" id="PasswordBox" /></div>
+    <div><input type="button" id="RegisterButton" value="register" /></div>
 </body>
 </html>
