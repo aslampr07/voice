@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', express.static('public'));
 app.use('/login', express.static('public/pages/login'));
 app.use('/register', express.static('public/pages/register'));
+app.use('/post/create', express.static('public/pages/post/create'));
 
 //For routing the channel requests.
 //The mysql connection has been passed to the routes.

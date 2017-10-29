@@ -50,7 +50,13 @@
     <Compile Include="public\js\jquery-3.2.1.js" />
     <Compile Include="public\js\js.cookie.js" />
     <Content Include="package.json" />
+    <Content Include="public\index.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="public\pages\login\index.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="public\pages\post\create\index.html">
       <SubType>Code</SubType>
     </Content>
     <Content Include="public\pages\register\index.html">
@@ -62,6 +68,8 @@
     <Folder Include="config\" />
     <Folder Include="public\pages\" />
     <Folder Include="public\pages\login\" />
+    <Folder Include="public\pages\post\" />
+    <Folder Include="public\pages\post\create\" />
     <Folder Include="public\pages\register\" />
     <Folder Include="tools\" />
     <Folder Include="routes\" />
