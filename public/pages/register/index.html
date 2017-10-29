@@ -4,8 +4,27 @@
 <head>
     <meta charset="utf-8" />
     <title>Register Page</title>
+    <script src="../js/jquery-3.2.1.js"></script>
+    <script src="../js/js.cookie.js"></script>
+    <script>
+        $(function () {
+            $('#RegisterButton').click(function () {
+                var username = $('#UsernameBox').val();
+                var email = $('#EmailBox').val();
+                var password = $('#PasswordBox').val();
+
+                //Registarion is not completed.
+            });
+        });
+    </script>
 </head>
 <body>
-
+    <div>Username</div>
+    <div><input type="text" id="UsernameBox"/></div>
+    <div>Email</div>
+    <div><input type="text" id="EmailBox"/></div>
+    <div>password</div>
+    <div><input type="password" id="PasswordBox"/></div>
+    <div><input type="button" id="RegisterButton" value="register"/></div>
 </body>
 </html>

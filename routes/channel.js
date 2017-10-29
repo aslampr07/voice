@@ -6,6 +6,7 @@ module.exports = function (con) {
     var router = express.Router();
 
 
+    //Request for creating channel
     router.post('/create', function (req, res) {
         token.verify(req.query.auth, con, function (exist, id) {
             if (exist) {
@@ -65,6 +66,7 @@ module.exports = function (con) {
         });
     });
 
+    //Return the channel discription
     router.get('/_:channelName', function (req, res) {
         //For getting the name, creationTime and description of the channel
         var sql = mysql.format("SELECT c.name, d.body, creationTime FROM Channel c, Description d" +
@@ -104,6 +106,29 @@ module.exports = function (con) {
 
             }
         });
+    });
+
+    //Reads the query and return the name of the search. 
+    router.get('/search', function (req, res) {
+        if (req.query.query == '' || req.query.query != '') {
+            var query = req.query.query;
+            var sql = mysql.format("SELECT name, body FROM Channel c, "
+                + "Description d WHERE (name like ?) AND (c.id = d.channelID)", ['%' + query + '%']);
+            con.query(sql, function (err, result) {
+                var response = {
+                    'status':'success'
+                }
+                response['channels'] = result;
+                res.send(response);
+            });
+        }
+        else
+        {
+            var response = {
+                'status': 'error',
+                'type': 'noQueryFound'
+            };
+        }
     });
 
     return router;
