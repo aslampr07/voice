@@ -10,6 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Using the static method for serving the static.
 app.use('/', express.static('public'));
+app.use('/login', express.static('public/pages/login'));
+app.use('/register', express.static('public/pages/register'));
 
 //For routing the channel requests.
 //The mysql connection has been passed to the routes.
