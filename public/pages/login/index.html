@@ -27,8 +27,11 @@
                         $('#StatusDisp').text("Password or Username is incorrect");
                     else
                     {
-                        console.log(data);
                         Cookies.set('auth', data.token, { expires: 30 });
+                        if (window.location.search == "?redirect=true")
+                            window.history.back();
+                        else
+                            window.location = '/post/create';
                     }
                 });
             });
