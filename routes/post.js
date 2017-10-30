@@ -64,6 +64,7 @@ module.exports = function (con) {
                                                 'status': 'success',
                                                 'id': charID
                                             }
+                                            console.log("New Post created");
                                             res.send(response);
                                         });
                                     });
