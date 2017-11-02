@@ -82,6 +82,7 @@ module.exports = function (con) {
                     }
                 });
             }
+
             else {
                 var response = {
                     'status': 'error',
@@ -91,5 +92,34 @@ module.exports = function (con) {
             }
         });
     });
+
+    router.get('/get', function (req, res) {
+        if (!req.query.channel && !req.query.user)
+            res.send("No query string found");
+
+
+        //If there is channel query but no user query in the request.
+        else if (req.query.channel && !req.query.user) {
+            var channel = req.query.channel;
+            var sql = mysql.format("SELECT id FROM Channel WHERE name = ?", [channel]);
+            con.query(sql, function (err, result) {
+                if (err)
+                    throw err;
+                if (result.length) {
+                    var channelID = result[0].id;
+                    var sql = mysql.format("SELECT t.body AS title, p.charID AS ID, u.username, p.creationTime FROM Post p, PostTitle t, User u WHERE p.id = t.postID AND p.userID = u.ID AND p.channelId = ?", [channelID]);
+                    con.query(sql, function (err, result) {
+                        for (var i = 0; i < result.length; i++) {
+                            result[i].order = i;
+                        }
+                        res.send(result);
+                    });
+                }
+                else
+                    res.send("Channel Not found");
+            });
+        }
+    });
+
     return router;
 }

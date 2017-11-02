@@ -21,7 +21,6 @@
                     'login': login,
                     'password': password
                 };
-
                 $.post('/api/1.0/account/login', request, function (data, status) {
                     if (data.status == 'error')
                         $('#StatusDisp').text("Password or Username is incorrect");
