@@ -96,8 +96,6 @@ module.exports = function (con) {
     router.get('/get', function (req, res) {
         if (!req.query.channel && !req.query.user)
             res.send("No query string found");
-
-
         //If there is channel query but no user query in the request.
         else if (req.query.channel && !req.query.user) {
             var channel = req.query.channel;
@@ -107,17 +105,55 @@ module.exports = function (con) {
                     throw err;
                 if (result.length) {
                     var channelID = result[0].id;
-                    var sql = mysql.format("SELECT t.body AS title, p.charID AS ID, u.username, p.creationTime FROM Post p, PostTitle t, User u WHERE p.id = t.postID AND p.userID = u.ID AND p.channelId = ?", [channelID]);
+                    var sql = mysql.format("SELECT t.body AS title, p.charID AS ID, u.username, p.creationTime FROM Post p, " +
+                        "PostTitle t, User u WHERE p.id = t.postID AND p.userID = u.ID AND p.channelId = ? ORDER BY p.creationTime DESC", [channelID]);
                     con.query(sql, function (err, result) {
+                        if (err)
+                            throw err;
                         for (var i = 0; i < result.length; i++) {
                             result[i].order = i;
                         }
                         res.send(result);
                     });
                 }
-                else
-                    res.send("Channel Not found");
+                else {
+                    var response = {
+                        'status': 'error',
+                        'type': 'noChannelFound'
+                    };
+                    res.send(response);
+                }
             });
+        }
+
+        //If there is user query but no channel query
+        else if (!req.query.channel && req.query.user) {
+            var user = req.query.user;
+            var sql = mysql.format("SELECT id FROM User WHERE username = ?", [req.query.user]);
+            con.query(sql, function (err, result) {
+                if (err)
+                    throw err;
+                if (result.length) {
+                    var userID = result[0].id;
+                    var sql = mysql.format("SELECT t.body AS title, p.charID as ID, c.name as Channel ,p.creationTime FROM "
+                        + "Post p, PostTitle t, Channel c WHERE p.id = t.postID and p.channelID = c.ID AND p.userID = ? ORDER BY p.creationTime DESC", [userID]);
+                    con.query(sql, function (err, result) {
+                        if (err)
+                            throw err;
+                        for (var i = 0; i < result.length; i++) {
+                            result[i].order = i;
+                        }
+                        res.send(result);
+                    });
+                }
+                else {
+                    var response = {
+                        'status': 'error',
+                        'type': 'noUserFound'
+                    };
+                    res.send(response);
+                }
+            })
         }
     });
 
