@@ -113,7 +113,11 @@ module.exports = function (con) {
                         for (var i = 0; i < result.length; i++) {
                             result[i].order = i;
                         }
-                        res.send(result);
+                        var response = {};
+                        response['status'] = 'success';
+                        response['post'] = result;
+                        console.log(response);
+                        res.send(response);
                     });
                 }
                 else {

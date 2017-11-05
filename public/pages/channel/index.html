@@ -12,6 +12,9 @@
             padding-left: 10px;
             margin-bottom: 5px;
         }
+        .title{
+            font-weight:bold;
+        }
     </style>
     <script src="../../js/jquery-3.2.1.js"></script>
     <script>
@@ -28,13 +31,23 @@
 
 
             $.get('/api/1.0/post/get', query, function (data, status) {
-                console.log(data);
-                for (var i in data) {
-                    var item = $("<div>", { 'class': 'item' });
-                    item.append($("<div>", { 'text': "Author: " + data[i].username }));
-                    item.append($("<div>", { 'text': data[i].title }));
-                    $('#UI').append(item);
+                if (data.status == 'success') {
+                    $.get('/api/1.0/channel/_' + channel, function (channelData, status) {
+                        $('#Description').text(channelData.description);
+                        var createdTime = new Date(channelData.creationTime);
+                        var formattedTime = "Created on: " + createdTime.getDate() + "/" + createdTime.getMonth() + "/" + createdTime.getFullYear();
+                        $('#createdDate').text(formattedTime);
+                    });
+
+                    for (var i in data.post) {
+                        var item = $("<div>", { 'class': 'item' });
+                        item.append($("<div>", { 'text': "Author: " + data.post[i].username }));
+                        item.append($("<div>", { 'text': data.post[i].title, 'class': 'title' }));
+                        $('#UI').append(item);
+                    }
                 }
+                else
+                    alert("Channel not found");
             });
 
         });
@@ -42,6 +55,8 @@
 </head>
 <body>
     <h1 id="channelName">Dummy Channel Name</h1>
+    <div id="Description"></div>
+    <h6 id="createdDate"></h6>
     <div id="UI">
     </div>
 </body>
