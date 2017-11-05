@@ -3,7 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Channel Name Here!</title>
+    <style>
+        .item{
+            border-left: 6px solid blue;
+            background-color: paleturquoise;
+            padding-left: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
     <script src="../../js/jquery-3.2.1.js"></script>
     <script>
         $(function () {
@@ -12,19 +21,28 @@
             var splittedPathName = pathname.split("/");
             //Removing the _ from the channel name;
             var channel = splittedPathName[2].substring(1, splittedPathName[2].length);
-
+            $('#channelName').text(channel);
             var query = {
                 'channel': channel
             };
+
+
             $.get('/api/1.0/post/get', query, function (data, status) {
                 console.log(data);
+                for (var i in data) {
+                    var item = $("<div>", { 'class': 'item' });
+                    item.append($("<div>", { 'text': "Author: " + data[i].username }));
+                    item.append($("<div>", { 'text': data[i].title }));
+                    $('#UI').append(item);
+                }
             });
 
         });
     </script>
 </head>
 <body>
-    <h1>Dummy Channel Name</h1>
-    <div id="test"></div>
+    <h1 id="channelName">Dummy Channel Name</h1>
+    <div id="UI">
+    </div>
 </body>
 </html>
