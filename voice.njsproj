@@ -53,6 +53,9 @@
     <Content Include="public\index.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="public\pages\channel\index.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="public\pages\login\index.html">
       <SubType>Code</SubType>
     </Content>
@@ -68,6 +71,7 @@
     <Folder Include="config\" />
     <Folder Include="public\pages\" />
     <Folder Include="public\pages\login\" />
+    <Folder Include="public\pages\channel\" />
     <Folder Include="public\pages\post\" />
     <Folder Include="public\pages\post\create\" />
     <Folder Include="public\pages\register\" />

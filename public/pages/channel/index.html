@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Channel Name Here!</title>
+    <script src="../../js/jquery-3.2.1.js"></script>
+    <script>
+        $(function () {
+            var pathname = window.location.pathname;
+            //for getting the channel name;
+            var splittedPathName = pathname.split("/");
+            //Removing the _ from the channel name;
+            var channel = splittedPathName[2].substring(1, splittedPathName[2].length);
+
+            var query = {
+                'channel': channel
+            };
+            $.get('/api/1.0/post/get', query, function (data, status) {
+                console.log(data);
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <h1>Dummy Channel Name</h1>
+    <div id="test"></div>
+</body>
+</html>
