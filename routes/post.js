@@ -125,6 +125,7 @@ module.exports = function (con) {
                     'type': 'authError'
                 };
                 res.send(response);
+                
             }
         });
     });
