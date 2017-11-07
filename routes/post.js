@@ -92,7 +92,6 @@ module.exports = function (con) {
             }
         });
     });
-
     router.get('/get', function (req, res) {
         if (!req.query.channel && !req.query.user)
             res.send("No query string found");

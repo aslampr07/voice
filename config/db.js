@@ -1,7 +1,7 @@
 ﻿var mysql = require('mysql');
 var con = mysql.createConnection({
     //Change this IP to localhost after development
-    host: "192.168.0.101",
+    host: "localhost",
     user: "root",
     password: "fuckkmea",
     database: "voice"
