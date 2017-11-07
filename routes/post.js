@@ -12,6 +12,7 @@ module.exports = function (con) {
             if (exist) {
                 var channel = req.body.channel;
                 var title = req.body.title;
+                var body = req.body.body;
                 var sql = mysql.format("SELECT ID FROM Channel WHERE name = ?", [channel]);
                 con.query(sql, function (err, result) {
                     if (err)
@@ -43,8 +44,9 @@ module.exports = function (con) {
                                             throw err;
                                         });
                                     }
+                                    var postID = result.insertId;
                                     data = {
-                                        'postID': result.insertId,
+                                        'postID': postID,
                                         'body': title
                                     };
                                     sql = "INSERT INTO PostTitle SET ?";
@@ -54,19 +56,53 @@ module.exports = function (con) {
                                                 throw err;
                                             });
                                         }
-                                        con.commit(function (err) {
-                                            if (err) {
-                                                con.rollback(function () {
-                                                    throw err;
+                                        //When there is body for the post
+                                        if (body) {
+                                            data = {
+                                                'body': body,
+                                                'postID': postID
+                                            };
+                                            sql = "INSERT INTO PostText SET ?";
+                                            con.query(sql, data, function (err, result) {
+                                                if (err) {
+                                                    con.rollback(function () {
+                                                        throw err;
+                                                    });
+                                                }
+                                                con.commit(function () {
+                                                    if (err) {
+                                                        con.rollback(function () {
+                                                            throw err;
+                                                        })
+                                                    }
+                                                    var response = {
+                                                        'status': 'success',
+                                                        'id': charID
+                                                    }
+                                                    console.log("New Post created with body");
+                                                    res.send(response);
                                                 });
-                                            }
-                                            var response = {
-                                                'status': 'success',
-                                                'id': charID
-                                            }
-                                            console.log("New Post created");
-                                            res.send(response);
-                                        });
+                                            });
+                                        }
+
+                                        else {
+                                            console.log("Body not found");
+                                            con.commit(function (err) {
+                                                if (err) {
+                                                    con.rollback(function () {
+                                                        throw err;
+                                                    });
+                                                }
+                                                var response = {
+                                                    'status': 'success',
+                                                    'id': charID
+                                                }
+                                                console.log("New Post created without body");
+                                                res.send(response);
+                                            });
+                                        }
+
+
                                     });
 
                                 });
@@ -92,6 +128,7 @@ module.exports = function (con) {
             }
         });
     });
+
     router.get('/get', function (req, res) {
         if (!req.query.channel && !req.query.user)
             res.send("No query string found");
@@ -115,7 +152,6 @@ module.exports = function (con) {
                         var response = {};
                         response['status'] = 'success';
                         response['post'] = result;
-                        console.log(response);
                         res.send(response);
                     });
                 }

@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,17 +22,18 @@
                 });
                 $('#SubmitButton').click(function () {
                     var title = $('#TitleBox').val();
+                    var body = $('#PostBody').val();
                     var auth = Cookies.get('auth');
                     var url = "/api/1.0/post/create?auth=" + auth;
                     var channel = $('#channelList :selected').val();
                     var data = {
                         'title': title,
-                        'channel': channel
+                        'channel': channel,
+                        'body': body
                     };
 
                     $.post(url, data, function (data, status) {
-                        if (data.status == 'success')
-                        {
+                        if (data.status == 'success') {
                             alert("Post Created; Post ID: " + data.id);
                             window.location = '/channel/_' + channel;
                         }
@@ -46,13 +48,23 @@
         });
     </script>
 </head>
+
 <body>
     <div>Title</div>
-    <div><input type="text" id="TitleBox"/></div>
-    <div>Body (Not Implemented)</div>
-    <div><textarea></textarea></div>
+    <div>
+        <input type="text" id="TitleBox" />
+    </div>
+    <div>Body</div>
+    <div>
+        <textarea id="PostBody"></textarea>
+    </div>
     <div>Channel</div>
-    <div><select id="channelList"/></div>
-    <div><input type="button" id="SubmitButton" value="Submit" /></div>
+    <div>
+        <select id="channelList" />
+    </div>
+    <div>
+        <input type="button" id="SubmitButton" value="Submit" />
+    </div>
 </body>
+
 </html>
