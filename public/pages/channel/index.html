@@ -41,14 +41,23 @@
 
                     for (var i in data.post) {
                         var item = $("<div>", { 'class': 'item' });
+                            item.data('postID', data.post[i].ID);
                         item.append($("<div>", { 'text': "Author: " + data.post[i].username }));
                         item.append($("<div>", { 'text': data.post[i].title, 'class': 'title' }));
                         $('#UI').append(item);
                     }
+                    $('.item').click(function(){
+                        var postid = $(this).data('postID');
+                        
+                        var url = '/post/read/' + postid;
+                        window.location.href = url;
+                    });
                 }
                 else
                     alert("Channel not found");
             });
+
+
 
         });
     </script>
