@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #PostTitle {
+            font-weight: bold;
+            font-size: 20pt;
+        }
+        #time{
+            font-size: 10pt;
+            color: grey;    
+        }
+        .link
+        {
+            color: blue;
+        }
+    </style>
+    <title>View Post</title>
+    <script src="/js/jquery-3.2.1.js"></script>
+
+    <script>
+        $(function () {
+            var path = window.location.pathname;
+            var splittedpath = path.split("/");
+            var postID = (path.split("/")[3]);
+
+            var url = "/api/1.0/post/read/" + postID;
+            $.get(url, function (data, status) {
+                console.log(data);
+                if (data.status == 'success') {
+                    $('#PostTitle').text(data.title);
+                    $('#username').text(data.user);
+                    $('#channel').text(data.channel);
+                    var creationTime = new Date(data.creationTime);
+                    var timestring ="on " + creationTime.getHours()+":"+creationTime.getMinutes()+" "+
+                            creationTime.getDate()+"/"+creationTime.getMonth()+"/"+creationTime.getFullYear();
+                    $('#time').text(timestring);
+
+                    if (data.body)
+                        $('#PostBody').text(data.body);
+
+                }
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <div>
+        <span id="username" class="link">dsf</span> in
+        <span class="link" id="channel">sdfa</span>
+    </div>
+    <div id="time">
+
+    </div>
+    <div id="PostTitle"></div>
+    <div id="PostBody"></div>
+</body>

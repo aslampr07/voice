@@ -18,8 +18,6 @@
                     $.each(data.channels, function (item) {
                         var name = data.channels[item].name;
                         $('#channelList').append($('<option/>').val(name).text(name));
-
-
                     });
                 });
                 $('#SubmitButton').click(function () {

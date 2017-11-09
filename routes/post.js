@@ -101,8 +101,6 @@ module.exports = function (con) {
                                                 res.send(response);
                                             });
                                         }
-
-
                                     });
 
                                 });
@@ -197,5 +195,67 @@ module.exports = function (con) {
         }
     });
 
+    router.get('/read/:postID', function(req, res){
+        var charID = req.params.postID;
+        var sql = mysql.format("SELECT ID, userID, channelID, creationTime FROM Post WHERE charID = ?", [charID]);
+        con.query(sql, function(err, result){
+            if(err)
+                throw err;
+            if(result.length)
+            {
+                var response = {};
+                var postId = result[0].ID;
+                var userID = result[0].userID;
+                var channelID = result[0].channelID;
+                response['creationTime'] = result[0].creationTime;
+
+                var sql = mysql.format("SELECT username FROM User where ID = ?", [userID]);
+                con.query(sql, function(err, result){
+                    if(err)
+                        throw err;
+                    response['user'] = result[0].username;
+
+                    var sql = mysql.format("SELECT name from Channel WHERE ID = ?", [channelID]);
+                    con.query(sql, function(err, result){
+                        if(err)
+                            throw err;
+                        response['channel'] = result[0].name;
+
+                        var sql = mysql.format("SELECT body FROM PostTitle WHERE postID = ?", [postId]);
+                        con.query(sql, function(err, result){
+                            if(err)
+                                throw err;
+                            response['title'] = result[0].body;
+                            
+                            var sql = mysql.format("SELECT body FROM PostText WHERE postID = ?", [postId]);
+                            con.query(sql, function(err, result){
+                                if(err)
+                                    throw err;
+                                if(result.length)
+                                {
+                                    response['body'] = result[0].body;
+                                    response['status'] = 'success';
+                                    res.send(response);
+                                }
+                                else
+                                {
+                                    response['status'] = 'success';
+                                    res.send(response);
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+            else
+            {
+                var response = {
+                    'status': 'error',
+                    'type':'invalidPostID'
+                }
+                res.send(response);
+            }
+        });
+    });
     return router;
 }

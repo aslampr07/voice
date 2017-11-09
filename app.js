@@ -13,9 +13,10 @@ app.use('/', express.static('public'));
 app.use('/login', express.static('public/pages/login'));
 app.use('/register', express.static('public/pages/register'));
 app.use('/post/create', express.static('public/pages/post/create'));
+app.use('/post/read/:postID', express.static('public/pages/post/read'));
 app.use('/channel/_:channelName', express.static('public/pages/channel'));
 
-//For routing the channel requests.
+//For routing the channel requests.d
 //The mysql connection has been passed to the routes.
 app.use('/api/1.0/account', require('./routes/account')(con));
 app.use('/api/1.0/channel', require('./routes/channel')(con));
