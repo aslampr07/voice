@@ -9,14 +9,15 @@ app.use(bodyParser.json()); //may not need this line, as there is no json parsin
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //Using the static method for serving the static.
+//Below are static pages, on different urls
 app.use('/', express.static('public'));
 app.use('/login', express.static('public/pages/login'));
 app.use('/register', express.static('public/pages/register'));
 app.use('/post/create', express.static('public/pages/post/create'));
 app.use('/post/read/:postID', express.static('public/pages/post/read'));
-app.use('/channel/_:channelName', express.static('public/pages/channel'));
+app.use('/channel/_:channelName', express.static('public/pages/channel/view'));
 
-//For routing the channel requests.d
+//For routing the channel requests.
 //The mysql connection has been passed to the routes.
 app.use('/api/1.0/account', require('./routes/account')(con));
 app.use('/api/1.0/channel', require('./routes/channel')(con));
