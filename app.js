@@ -15,6 +15,7 @@ app.use('/login', express.static('public/pages/login'));
 app.use('/register', express.static('public/pages/register'));
 app.use('/post/create', express.static('public/pages/post/create'));
 app.use('/post/read/:postID', express.static('public/pages/post/read'));
+app.use('/channel/create', express.static('public/pages/channel/create'))
 app.use('/channel/_:channelName', express.static('public/pages/channel/view'));
 
 //For routing the channel requests.
@@ -27,4 +28,3 @@ app.use('/api/1.0/post', require('./routes/post')(con));
 //The server is listening at port 8000, not using 80 because it need sudo for running the script, which is a
 //security risk. The port 80 is redirected to 8000 from the router.
 app.listen(8000);
-
