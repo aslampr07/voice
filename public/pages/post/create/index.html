@@ -34,7 +34,6 @@
 
                     $.post(url, data, function (data, status) {
                         if (data.status == 'success') {
-                            alert("Post Created; Post ID: " + data.id);
                             window.location = '/channel/_' + channel;
                         }
                     });

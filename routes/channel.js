@@ -7,6 +7,7 @@ module.exports = function (con) {
 
 
     //Request for creating channel
+    //This doesn't check if the channelname exist.
     router.post('/create', function (req, res) {
         token.verify(req.query.auth, con, function (exist, id) {
             if (exist) {
