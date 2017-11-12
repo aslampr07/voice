@@ -257,5 +257,25 @@ module.exports = function (con) {
             }
         });
     });
+
+    router.post('/vote', function(req, res){
+        token.verify(req.query.auth, con, function(exist, userID){
+            if(exist){
+                var postID = hashid.decode(req.body.postID)[0];
+                var dir = parseInt(req.body.dir);
+
+                var sql = mysql.format("REPLACE INTO Vote(userID, postID, dir) VALUES(?, ?, ?)", [userID, postID, dir]);
+                con.query(sql, function(err, result){
+                    if(err)
+                        throw err;
+                    var response = {
+                        'status': 'success'
+                    }
+                    res.send(response);
+                })
+            }
+        })
+    });
+
     return router;
 }
