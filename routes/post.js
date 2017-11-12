@@ -27,6 +27,7 @@ module.exports = function (con) {
                                 'channelID': channelID,
                                 'creationTime': new Date()
                             };
+                            //Creating post.
                             sql = "INSERT INTO Post SET ?";
                             con.query(sql, data, function (err, result, field) {
                                 if (err) {
@@ -36,19 +37,21 @@ module.exports = function (con) {
                                 }
                                 //The post title is not checked for having empty string.
                                 //It just assumes that title is not empty.
-                                var charID = hashid.encode(result.insertId);
-                                sql = mysql.format("UPDATE Post SET charID = ? WHERE ID = ?", [charID, result.insertId]);
+                                //Adding the charID to the post.
+                                var postID = result.insertId;
+                                var charID = hashid.encode(postID);
+                                sql = mysql.format("UPDATE Post SET charID = ? WHERE ID = ?", [charID, postID]);
                                 con.query(sql, function (err) {
                                     if (err) {
                                         con.rollback(function () {
                                             throw err;
                                         });
                                     }
-                                    var postID = result.insertId;
                                     data = {
                                         'postID': postID,
                                         'body': title
                                     };
+                                    //Inserting the title of the post.
                                     sql = "INSERT INTO PostTitle SET ?";
                                     con.query(sql, data, function (err, result) {
                                         if (err) {
@@ -56,53 +59,62 @@ module.exports = function (con) {
                                                 throw err;
                                             });
                                         }
-                                        //When there is body for the post
-                                        if (body) {
-                                            data = {
-                                                'body': body,
-                                                'postID': postID
-                                            };
-                                            sql = "INSERT INTO PostText SET ?";
-                                            con.query(sql, data, function (err, result) {
-                                                if (err) {
-                                                    con.rollback(function () {
-                                                        throw err;
-                                                    });
-                                                }
-                                                con.commit(function () {
+
+                                        //Automatically upvoting the self post.
+
+                                        sql = mysql.format("REPLACE INTO Vote(userID, postID, dir) VALUES(?, ?, ?)", [userID, postID, 1]);
+                                        con.query(sql, function (err, result) {
+                                            if (err)
+                                                con.rollback(function () {
+                                                    throw err;
+                                                });
+                                            //When there is body for the post
+                                            if (body) {
+                                                data = {
+                                                    'body': body,
+                                                    'postID': postID
+                                                };
+                                                //Inserting the body of the post.
+                                                sql = "INSERT INTO PostText SET ?";
+                                                con.query(sql, data, function (err, result) {
                                                     if (err) {
                                                         con.rollback(function () {
                                                             throw err;
-                                                        })
+                                                        });
+                                                    }
+                                                    con.commit(function () {
+                                                        if (err) {
+                                                            con.rollback(function () {
+                                                                throw err;
+                                                            })
+                                                        }
+                                                        var response = {
+                                                            'status': 'success',
+                                                            'id': charID
+                                                        }
+                                                        console.log("New Post created with body");
+                                                        res.send(response);
+                                                    });
+                                                });
+                                            }
+
+                                            else {
+                                                con.commit(function (err) {
+                                                    if (err) {
+                                                        con.rollback(function () {
+                                                            throw err;
+                                                        });
                                                     }
                                                     var response = {
                                                         'status': 'success',
                                                         'id': charID
                                                     }
-                                                    console.log("New Post created with body");
+                                                    console.log("New Post created without body");
                                                     res.send(response);
                                                 });
-                                            });
-                                        }
-
-                                        else {
-                                            console.log("Body not found");
-                                            con.commit(function (err) {
-                                                if (err) {
-                                                    con.rollback(function () {
-                                                        throw err;
-                                                    });
-                                                }
-                                                var response = {
-                                                    'status': 'success',
-                                                    'id': charID
-                                                }
-                                                console.log("New Post created without body");
-                                                res.send(response);
-                                            });
-                                        }
+                                            }
+                                        });
                                     });
-
                                 });
                             });
                         });
@@ -123,7 +135,7 @@ module.exports = function (con) {
                     'type': 'authError'
                 };
                 res.send(response);
-                
+
             }
         });
     });
@@ -195,14 +207,13 @@ module.exports = function (con) {
         }
     });
 
-    router.get('/read/:postID', function(req, res){
+    router.get('/read/:postID', function (req, res) {
         var charID = req.params.postID;
         var sql = mysql.format("SELECT ID, userID, channelID, creationTime FROM Post WHERE charID = ?", [charID]);
-        con.query(sql, function(err, result){
-            if(err)
+        con.query(sql, function (err, result) {
+            if (err)
                 throw err;
-            if(result.length)
-            {
+            if (result.length) {
                 var response = {};
                 var postId = result[0].ID;
                 var userID = result[0].userID;
@@ -210,35 +221,33 @@ module.exports = function (con) {
                 response['creationTime'] = result[0].creationTime;
 
                 var sql = mysql.format("SELECT username FROM User where ID = ?", [userID]);
-                con.query(sql, function(err, result){
-                    if(err)
+                con.query(sql, function (err, result) {
+                    if (err)
                         throw err;
                     response['user'] = result[0].username;
 
                     var sql = mysql.format("SELECT name from Channel WHERE ID = ?", [channelID]);
-                    con.query(sql, function(err, result){
-                        if(err)
+                    con.query(sql, function (err, result) {
+                        if (err)
                             throw err;
                         response['channel'] = result[0].name;
 
                         var sql = mysql.format("SELECT body FROM PostTitle WHERE postID = ?", [postId]);
-                        con.query(sql, function(err, result){
-                            if(err)
+                        con.query(sql, function (err, result) {
+                            if (err)
                                 throw err;
                             response['title'] = result[0].body;
-                            
+
                             var sql = mysql.format("SELECT body FROM PostText WHERE postID = ?", [postId]);
-                            con.query(sql, function(err, result){
-                                if(err)
+                            con.query(sql, function (err, result) {
+                                if (err)
                                     throw err;
-                                if(result.length)
-                                {
+                                if (result.length) {
                                     response['body'] = result[0].body;
                                     response['status'] = 'success';
                                     res.send(response);
                                 }
-                                else
-                                {
+                                else {
                                     response['status'] = 'success';
                                     res.send(response);
                                 }
@@ -247,26 +256,25 @@ module.exports = function (con) {
                     });
                 });
             }
-            else
-            {
+            else {
                 var response = {
                     'status': 'error',
-                    'type':'invalidPostID'
+                    'type': 'invalidPostID'
                 }
                 res.send(response);
             }
         });
     });
 
-    router.post('/vote', function(req, res){
-        token.verify(req.query.auth, con, function(exist, userID){
-            if(exist){
+    router.post('/vote', function (req, res) {
+        token.verify(req.query.auth, con, function (exist, userID) {
+            if (exist) {
                 var postID = hashid.decode(req.body.postID)[0];
                 var dir = parseInt(req.body.dir);
 
                 var sql = mysql.format("REPLACE INTO Vote(userID, postID, dir) VALUES(?, ?, ?)", [userID, postID, dir]);
-                con.query(sql, function(err, result){
-                    if(err)
+                con.query(sql, function (err, result) {
+                    if (err)
                         throw err;
                     var response = {
                         'status': 'success'
