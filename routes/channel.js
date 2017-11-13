@@ -60,7 +60,7 @@ module.exports = function (con) {
                 res.status(401);
                 var response = {
                     'status': 'error',
-                    'type': 'invalidAuth'
+                    'type': 'authError'
                 };
                 res.send(response);
             }

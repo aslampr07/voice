@@ -135,7 +135,6 @@ module.exports = function (con) {
                     'type': 'authError'
                 };
                 res.send(response);
-
             }
         });
     });
@@ -266,6 +265,7 @@ module.exports = function (con) {
         });
     });
 
+    //Used for voting.
     router.post('/vote', function (req, res) {
         token.verify(req.query.auth, con, function (exist, userID) {
             if (exist) {
@@ -282,7 +282,69 @@ module.exports = function (con) {
                     res.send(response);
                 })
             }
+
+            else {
+                var response = {
+                    'status': 'error',
+                    'type': 'authError'
+                };
+                res.send(response);
+            }
         })
+    });
+
+    //To check if the user had voted on a post.
+    router.get('/:postID/voted', function (req, res) {
+        token.verify(req.query.auth, con, function (exist, userID) {
+            if (exist) {
+                var postID = hashid.decode(req.params.postID)[0];
+                console.log(req.query);
+                //Checking if Post exist.
+                var sql = mysql.format("SELECT * FROM Post WHERE ID = ?", [postID]);
+                con.query(sql, function (err, result) {
+                    if (err)
+                        throw err;
+                    if (result.length) {
+                        sql = mysql.format("SELECT dir FROM Vote WHERE userID = ? and postID = ?", [userID, postID]);
+                        con.query(sql, function (err, result) {
+                            var response = {};
+                            if (err)
+                                throw err;
+
+                            //If the user already voted on the post.
+                            if (result.length)
+                                response = {
+                                    'status': 'success',
+                                    'dir': result[0].dir
+                                };
+
+                            //If the user has never voted on the post. I will return 0 as dir.    
+                            else {
+                                response = {
+                                    'status': 'success',
+                                    'dir': 0
+                                };
+                            }
+                            res.send(response);
+                        })
+                    }
+                    else {
+                        var response = {
+                            'status': 'error',
+                            'type': 'postNotFound'
+                        };
+                        res.send(response);
+                    }
+                });
+            }
+            else {
+                var response = {
+                    'status': 'error',
+                    'type': 'authError'
+                };
+                res.send(response);
+            }
+        });
     });
 
     return router;

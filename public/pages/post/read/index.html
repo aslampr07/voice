@@ -9,54 +9,183 @@
         #PostTitle {
             font-weight: bold;
             font-size: 20pt;
+            margin-left: 25px;
         }
-        #time{
+
+        #VoteArrows {
+            float: left;
+        }
+
+        #time {
             font-size: 10pt;
-            color: grey;    
+            color: grey;
         }
-        .link
-        {
+
+        .arrow {
+            border: solid black;
+            border-width: 0 5px 5px 0;
+            display: inline-block;
+            padding: 5px;
+        }
+
+        .up {
+            transform: rotate(-135deg);
+        }
+
+        .down {
+            transform: rotate(45deg);
+        }
+
+        .link {
             color: blue;
         }
     </style>
     <title>View Post</title>
     <script src="/js/jquery-3.2.1.js"></script>
-
+    <script src="/js/js.cookie.js"></script>
     <script>
         $(function () {
             var path = window.location.pathname;
             var splittedpath = path.split("/");
             var postID = (path.split("/")[3]);
-
+            //The default flag for the direction of the vote.
+            var dir;
+            var RedArrow = {
+                'border': 'solid red',
+                'border-width': '0 5px 5px 0',
+                'display': 'inline-block',
+                'padding': '5px'
+            };
+            var GreenArrow = {
+                'border': 'solid green',
+                'border-width': '0 5px 5px 0',
+                'display': 'inline-block',
+                'padding': '5px'
+            };
+            var BlackArrow = {
+                'border': 'solid black',
+                'border-width': '0 5px 5px 0',
+                'display': 'inline-block',
+                'padding': '5px'
+            };
             var url = "/api/1.0/post/read/" + postID;
             $.get(url, function (data, status) {
-                console.log(data);
                 if (data.status == 'success') {
                     $('#PostTitle').text(data.title);
                     $('#username').text(data.user);
                     $('#channel').text(data.channel);
                     var creationTime = new Date(data.creationTime);
-                    var timestring ="on " + creationTime.getHours()+":"+creationTime.getMinutes()+" "+
-                            creationTime.getDate()+"/"+creationTime.getMonth()+"/"+creationTime.getFullYear();
+                    var timestring = "on " + creationTime.getHours() + ":" + creationTime.getMinutes() + " " +
+                        creationTime.getDate() + "/" + creationTime.getMonth() + "/" + creationTime.getFullYear();
                     $('#time').text(timestring);
-
                     if (data.body)
                         $('#PostBody').text(data.body);
-
                 }
-            })
+            });
+            if (Cookies.get('auth')) {
+                auth = Cookies.get('auth');
+                url = "/api/1.0/post/" + postID + "/voted";
+                var request = {
+                    'auth': auth
+                };
+                $.get(url, request, function (data, status) {
+                    if (data.dir == 1) {
+                        dir = 1;
+                        $("#upvote").css(GreenArrow);
+                    }
+                    else if (data.dir == -1) {
+                        dir = -1;
+                        $("#downvote").css(RedArrow);
+                    }
+                    else {
+                        dir = 0;
+                    }
+                })
+            }
+
+            $("#upvote").click(function () {
+                if (Cookies.get('auth')) {
+                    url = "/api/1.0/post/vote?auth=" + Cookies.get('auth');
+                    var request = {
+                        'postID': postID,
+                    };
+                    //If there is no vote or is downvote.
+                    if (dir == 1)
+                        request['dir'] = 0;
+                    else {
+                        request['dir'] = 1;
+                    }
+                    $.post(url, request, function (data, status) {
+                        if (data.status == 'success')
+                            if (dir == 1) {
+                                $('.arrow').css(BlackArrow);                        
+                                $('#upvote').css(BlackArrow);
+                                dir = 0;
+                            }
+                            else {
+                                $('.arrow').css(BlackArrow);                                
+                                $('#upvote').css(GreenArrow);
+                                dir = 1;
+                            }
+                    })
+                }
+                else {
+                    alert("There is no cookie");
+                }
+            });
+
+            $("#downvote").click(function () {
+                if (Cookies.get('auth')) {
+                    url = "/api/1.0/post/vote?auth=" + Cookies.get('auth');
+                    var request = {
+                        'postID': postID,
+                    };
+                    //If there is no vote or is downvote.
+                    if (dir == -1)
+                        request['dir'] = 0;
+                    else {
+                        request['dir'] = -1;
+                    }
+                    $.post(url, request, function (data, status) {
+                        if (data.status == 'success')
+                            if (dir == -1) {
+                                $('.arrow').css(BlackArrow);
+                                $('#downvote').css(BlackArrow);
+                                dir = 0;
+                            }
+                            else {
+                                $('.arrow').css(BlackArrow);                                
+                                $('#downvote').css(RedArrow);
+                                dir = -1;
+                            }
+                    })
+                }
+                else {
+                    alert("There is no cookie");
+                }
+            });
+
         });
     </script>
 </head>
 
 <body>
-    <div>
-        <span id="username" class="link">dsf</span> in
-        <span class="link" id="channel">sdfa</span>
-    </div>
-    <div id="time">
-
-    </div>
-    <div id="PostTitle"></div>
-    <div id="PostBody"></div>
+    <p>
+        <div>
+            <span id="username" class="link">dsf</span> in
+            <span class="link" id="channel">sdfa</span>
+        </div>
+        <div id="time"></div>
+    </p>
+    <p class="heading">
+        <div id="VoteArrows">
+            <div id="upvote" class="arrow up"></div>
+            <br/>
+            <div id="downvote" class="arrow down"></div>
+        </div>
+        <div id="PostTitle"></div>
+    </p>
+    <p class="bodyPara">
+        <div id="PostBody"></div>
+    </p>
 </body>
